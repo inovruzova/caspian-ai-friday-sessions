@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Apply — Knowledge Sharing{% endblock %}
+
+{% block content %}
+<div class="form-container" style="max-width: 600px;">
+    <h2>Apply for a Session</h2>
+
+    <div class="rules-reminder">
+        <p>📋 Please <a href="{% url 'rules' %}">get acquainted with the rules</a> before applying.</p>
+    </div>
+
+    {% if form.errors %}
+        <div class="form-errors">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Primary Speaker</label>
+            <input type="text" value="{{ user.first_name }} {{ user.last_name }} ({{ user.email }})" disabled>
+            <small style="color: var(--gray); font-size: 0.8rem;">You are automatically listed as the primary speaker.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="co_speakers">Co-Speakers (optional)</label>
+            <select name="co_speakers" id="co_speakers" multiple placeholder="Search for a co-speaker...">
+                {% for member in form.co_speakers.field.queryset %}
+                    <option value="{{ member.pk }}"
+                        {% if member.pk|slugify in form.co_speakers.value|default:"" %}selected{% endif %}>
+                        {{ member.full_name }} ({{ member.email }})
+                    </option>
+                {% endfor %}
+            </select>
+            <small style="color: var(--gray); font-size: 0.8rem;">Search and select co-speakers.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Session Title</label>
+            <input type="text" name="title" id="title"
+                   value="{{ form.title.value|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Session Description</label>
+            <textarea name="description" id="description" rows="4" required>{{ form.description.value|default:'' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="language">Session Language</label>
+            <input type="text" name="language" id="language"
+                value="{{ form.language.value|default:'English' }}"
+                placeholder="e.g. English, Azerbaijani" required>
+        </div>
+
+        <div class="form-group">
+            <label for="session_date">Session Date</label>
+            <input type="date" name="session_date" id="session_date"
+                   value="{{ form.session_date.value|default:'' }}" required>
+            <small style="color: var(--gray); font-size: 0.8rem;">Must be at least 3 days from today. Dates with approved sessions are unavailable. Last day you can choose: May 22, 2026</small>
+        </div>
+
+        <div class="form-group">
+            <label>Preferred Start Time(s)</label>
+            <div class="checkbox-group">
+                {% for value, label in form.fields.preferred_times.choices %}
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="preferred_times" value="{{ value }}">
+                        {{ label }}
+                    </label>
+                {% endfor %}
+            </div>
+            <small style="color: var(--gray); font-size: 0.8rem;">All times are in Baku time (AZT, UTC+4).</small>
+        </div>
+
+        <button type="submit" class="btn-primary">Submit Application</button>
+    </form>
+
+    <div class="apply-rules" style="margin-top: 2rem; padding: 1.2rem; background: var(--gray-light); border-radius: 8px; font-size: 0.88rem;">
+        <p><strong>📌 Important:</strong></p>
+        <p style="margin-top: 0.5rem;">• Attendance for your scheduled session is mandatory. No-shows will lose first-come/first-served priority for future applications.</p>
+        <p style="margin-top: 0.3rem;">• Speakers can present both online or offline.</p>
+    </div>
+</div>
+
+<style>
+    .rules-reminder {
+        background-color: #e8f0fe;
+        padding: 0.8rem 1rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .rules-reminder a {
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: normal;
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        width: auto;
+    }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css">
+
+<style>
+    .ts-wrapper {
+        border: 1px solid var(--gray-light);
+        border-radius: 6px;
+        font-size: 0.95rem;
+    }
+
+    .ts-wrapper .ts-control {
+        padding: 0.5rem 0.7rem;
+        border: none;
+        background: var(--white);
+        border-radius: 6px;
+    }
+
+    .ts-wrapper .ts-control input {
+        font-size: 0.95rem;
+    }
+
+    .ts-wrapper .ts-control .item {
+        background: var(--primary);
+        color: white;
+        border-radius: 20px;
+        padding: 0.2rem 0.6rem;
+        margin: 2px 4px 2px 0;
+        font-size: 0.85rem;
+    }
+
+    .ts-wrapper .ts-control .item .remove {
+        color: #F5A623 !important;
+        border-left: 1px solid rgba(245,166,35,0.3) !important;
+        margin-left: 0.4rem;
+        padding-left: 0.4rem;
+    }
+
+    .ts-wrapper .ts-control .item .remove:hover {
+        color: white !important;
+    }
+
+    .ts-dropdown {
+        border: 1px solid var(--gray-light);
+        border-radius: 6px;
+        margin-top: 4px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .ts-dropdown .active {
+        background-color: #f0f2ff;
+        color: var(--primary);
+    }
+
+    .ts-wrapper.focus .ts-control {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(45, 58, 140, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+    new TomSelect('#co_speakers', {
+        plugins: ['remove_button'],
+        maxOptions: null,
+        placeholder: 'Search for a co-speaker...',
+        hidePlaceholder: true,
+        render: {
+            option: function(data, escape) {
+                return '<div style="padding: 8px 12px;">' + escape(data.text) + '</div>';
+            },
+            item: function(data, escape) {
+                return '<div>' + escape(data.text) + '</div>';
+            }
+        }
+    });
+</script>
+{% endblock %}

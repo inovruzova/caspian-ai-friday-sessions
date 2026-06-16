@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<p>You are about to approve the following application(s). Please select a time for each:</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% for obj in queryset %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk }}" />
+    {% endfor %}
+    <input type="hidden" name="action" value="approve_applications" />
+    <input type="hidden" name="apply_approval" value="1" />
+
+    {% for item in applications_with_times %}
+    <fieldset style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 4px;">
+        <legend style="font-weight: bold; padding: 0 8px;">{{ item.application.title }}</legend>
+        <p style="margin-bottom: 10px; color: #666;">
+            {{ item.application.session_date }} — by {{ item.speaker_names }}
+        </p>
+        <label for="time_{{ item.application.pk }}" style="font-weight: bold; display: block; margin-bottom: 6px;">
+            Select session time:
+        </label>
+        <select name="time_{{ item.application.pk }}" id="time_{{ item.application.pk }}" style="padding: 6px 10px; min-width: 200px;">
+            {% for value, label in item.time_choices %}
+                <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+        </select>
+    </fieldset>
+    {% endfor %}
+
+    <div style="margin-top: 20px;">
+        <input type="submit" value="Confirm Approval" style="padding: 8px 20px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 4px;" />
+        <a href="{% url 'admin:ksessions_sessionapplication_changelist' %}" style="margin-left: 10px;">Cancel</a>
+    </div>
+</form>
+{% endblock %}

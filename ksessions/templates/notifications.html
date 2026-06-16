@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications — Knowledge Sharing{% endblock %}
+
+{% block content %}
+<div class="notifications-page">
+    <h1 class="page-title">Notifications</h1>
+
+    {% if notifications %}
+        <div class="notifications-list">
+            {% for notification in notifications %}
+            <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                <div class="notification-dot {% if not notification.is_read %}active{% endif %}"></div>
+                <div class="notification-content">
+                    <p class="notification-message">{{ notification.message }}</p>
+                    <span class="notification-time">{{ notification.created_at|timesince }} ago</span>
+                </div>
+                {% if notification.link %}
+                    <a href="{{ notification.link }}" class="notification-link">View →</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-data">No notifications yet.</p>
+    {% endif %}
+</div>
+
+<style>
+    .notifications-page {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+    }
+
+    .page-title {
+        text-align: center;
+        color: var(--primary);
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .notification-item {
+        background: var(--white);
+        border-radius: 10px;
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        transition: background-color 0.2s;
+    }
+
+    .notification-item.unread {
+        background: #f0f4ff;
+        border-left: 3px solid var(--primary);
+    }
+
+    .notification-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gray-light);
+        flex-shrink: 0;
+    }
+
+    .notification-dot.active {
+        background: var(--accent);
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-message {
+        font-size: 0.95rem;
+        color: var(--text);
+        line-height: 1.5;
+    }
+
+    .notification-time {
+        font-size: 0.8rem;
+        color: var(--gray);
+        margin-top: 0.3rem;
+        display: block;
+    }
+
+    .notification-link {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        font-size: 0.9rem;
+    }
+
+    .notification-link:hover {
+        color: var(--accent-hover);
+    }
+
+    .no-data {
+        text-align: center;
+        color: var(--gray);
+        padding: 3rem 0;
+    }
+
+    @media (max-width: 768px) {
+        .notification-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
