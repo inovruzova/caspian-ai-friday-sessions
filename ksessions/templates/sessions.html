@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}Sessions — Knowledge Sharing{% endblock %}
+
+{% block content %}
+<div class="sessions-page">
+    <h1 class="page-title">Sessions</h1>
+
+    <div class="tabs">
+        <a href="?tab=upcoming" class="tab {% if tab == 'upcoming' %}active{% endif %}">Upcoming</a>
+        <a href="?tab=past" class="tab {% if tab == 'past' %}active{% endif %}">Past</a>
+    </div>
+
+    {% if tab == 'upcoming' %}
+    <div class="sessions-list">
+        {% if pending_applications %}
+            {% for app in pending_applications %}
+            <div class="session-row pending-row">
+                <div class="session-row-date pending">
+                    <span class="month">{{ app.session_date|date:"M" }}</span>
+                    <span class="day">{{ app.session_date|date:"j" }}</span>
+                </div>
+                <div class="session-row-details">
+                    <div class="session-header-row">
+                        <h3>{{ app.title }}</h3>
+                        <span class="status-badge pending-badge">Pending Review</span>
+                    </div>
+                    <p class="speakers">
+                        🎤 {{ app.submitted_by.get_full_name }}
+                        {% for s in app.speakers.all %}
+                            {% if not s.is_primary %}, {{ s.get_display_name }}{% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class="description">{{ app.description }}</p>
+                    <span class="language-badge">{{ app.language }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if upcoming_sessions %}
+            {% for session in upcoming_sessions %}
+            <div class="session-row">
+                <div class="session-row-date">
+                    <span class="month">{{ session.date|date:"M" }}</span>
+                    <span class="day">{{ session.date|date:"j" }}</span>
+                </div>
+                <div class="session-row-details">
+                    <h3>{{ session.title }}</h3>
+                    <p class="speakers">
+                        🎤 {{ session.get_speaker_display }}
+                    </p>
+                    <p class="description">{{ session.description }}</p>
+                    {% if session.time %}
+                        <p class="time">🕐 {{ session.time }} (Baku time)</p>
+                    {% endif %}
+                    <span class="language-badge">{{ session.language }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        {% elif not pending_applications %}
+            <p class="no-data">No upcoming sessions yet. <a href="{% url 'apply' %}">Apply to present!</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if tab == 'past' %}
+    <div class="sessions-list">
+        {% if past_sessions %}
+            {% for session in past_sessions %}
+            <div class="session-row">
+                <div class="session-row-date past">
+                    <span class="month">{{ session.date|date:"M" }}</span>
+                    <span class="day">{{ session.date|date:"j" }}</span>
+                </div>
+                <div class="session-row-details">
+                    <h3>{{ session.title }}</h3>
+                    <p class="speakers">
+                        🎤 {{ session.get_speaker_display }}
+                    </p>
+                    <div class="session-links">
+                        {% if session.presentation_link %}
+                            <a href="{{ session.presentation_link }}" target="_blank" class="resource-link">📊 Presentation</a>
+                        {% endif %}
+                        {% if session.recording_link %}
+                            <a href="{{ session.recording_link }}" target="_blank" class="resource-link">🎥 Recording</a>
+                            <a href="https://caspian-ai.atlassian.net/wiki/spaces/DS/pages/508329988/2nd+run+06.03.26-22.05.6" target="_blank" class="resource-link password-link">🔑 Recording Password</a>
+                        {% endif %}
+                        {% if not session.presentation_link and not session.recording_link %}
+                            <span class="no-resources">Resources coming soon</span>
+                        {% endif %}
+                    </div>
+                    <span class="language-badge">{{ session.language }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-data">No past sessions yet.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .session-header-row {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .pending-badge {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .pending-row {
+        border-left: 3px solid var(--accent);
+    }
+
+    .session-row-date.pending {
+        background: var(--accent);
+        color: var(--primary);
+    }
+
+    .language-badge {
+        display: inline-block;
+        margin-top: 0.5rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 0.15rem 0.6rem;
+        border-radius: 12px;
+        background: #e8f0fe;
+        color: var(--primary);
+    }
+
+    .sessions-page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+    }
+
+    .page-title {
+        text-align: center;
+        color: var(--primary);
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 0;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--gray-light);
+    }
+
+    .tab {
+        padding: 0.8rem 2rem;
+        text-decoration: none;
+        color: var(--gray);
+        font-weight: 600;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.2s;
+    }
+
+    .tab:hover {
+        color: var(--primary);
+    }
+
+    .tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--accent);
+    }
+
+    /* ── SESSION ROWS ── */
+    .sessions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .session-row {
+        background: var(--white);
+        border-radius: 10px;
+        padding: 1.5rem;
+        display: flex;
+        gap: 1.5rem;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+        align-items: flex-start;
+    }
+
+    .session-row-date {
+        background: var(--primary);
+        color: white;
+        border-radius: 8px;
+        padding: 0.7rem 0.9rem;
+        text-align: center;
+        min-width: 60px;
+        flex-shrink: 0;
+    }
+
+    .session-row-date.past {
+        background: var(--gray);
+    }
+
+    .session-row-date .month {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .session-row-date .day {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .session-row-details h3 {
+        font-size: 1.1rem;
+        color: var(--primary);
+        margin-bottom: 0.3rem;
+    }
+
+    .session-row-details .speakers {
+        color: var(--accent-hover);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .session-row-details .description {
+        color: #555;
+        font-size: 0.92rem;
+        line-height: 1.5;
+    }
+
+    .session-row-details .time {
+        color: var(--gray);
+        font-size: 0.85rem;
+        margin-top: 0.4rem;
+    }
+
+    .session-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.6rem;
+    }
+
+    .resource-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+    }
+
+    .resource-link:hover {
+        color: var(--accent-hover);
+    }
+
+    .no-resources {
+        color: var(--gray);
+        font-style: italic;
+        font-size: 0.85rem;
+    }
+
+    .password-link {
+        font-size: 0.85rem;
+        color: var(--gray);
+    }
+
+    .password-link:hover {
+        color: var(--accent-hover);
+    }
+
+    .no-data {
+        text-align: center;
+        color: var(--gray);
+        padding: 3rem 0;
+    }
+
+    .no-data a {
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .session-row {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .session-links {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}

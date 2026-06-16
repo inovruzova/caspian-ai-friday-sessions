@@ -1,0 +1,370 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Caspian AI Friday Sessions{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'caspian-ai-logo.png' %}?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2D3A8C;
+            --primary-light: #3d4db0;
+            --accent: #F5A623;
+            --accent-hover: #e0950e;
+            --bg: #f5f6fa;
+            --white: #ffffff;
+            --gray-light: #e8e9f0;
+            --gray: #6b7280;
+            --text: #1a1a2e;
+            --danger: #dc3545;
+            --success: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background-color: var(--primary);
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--white);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-links .btn-apply {
+            background-color: var(--accent);
+            color: var(--primary);
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .nav-links .btn-apply:hover {
+            background-color: var(--accent-hover);
+            color: var(--primary);
+        }
+
+        /* Notification bell */
+        .notification-bell {
+            position: relative;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-size: 1.3rem;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background-color: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--white);
+            border-radius: 3px;
+        }
+
+        /* ── MESSAGES ── */
+        .messages-container {
+            max-width: 800px;
+            margin: 1rem auto;
+            padding: 0 1rem;
+        }
+
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main-content {
+            min-height: calc(100vh - 64px - 80px);
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            background-color: var(--primary);
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 1.5rem 2rem;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* ── FORMS (shared) ── */
+        .form-container {
+            max-width: 480px;
+            margin: 3rem auto;
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid var(--gray-light);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .form-footer a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .form-errors {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background-color: var(--primary);
+                flex-direction: column;
+                padding: 1rem 2rem;
+                gap: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .form-container {
+                margin: 1.5rem 1rem;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="navbar-brand">
+            <img src="{% static 'caspian-ai-logo.png' %}" alt="Caspian AI" class="navbar-logo">
+            Caspian AI Friday Sessions
+        </a>
+
+        <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'sessions' %}">Sessions</a></li>
+            <li><a href="{% url 'rules' %}">Rules & Voting</a></li>
+            <li><a href="{% url 'home' %}#faq">FAQ</a></li>
+            {% if user.is_authenticated %}
+                <li>
+                    <a href="{% url 'notifications' %}" class="notification-bell">
+                        🔔
+                        {% if unread_count %}
+                            <span class="notification-count">{{ unread_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background:none;border:none;color:rgba(255,255,255,0.85);cursor:pointer;font-size:0.95rem;padding:0;font-family:inherit;">Sign Out</button>
+                    </form>
+                </li>
+                <li><a href="{% url 'apply' %}" class="btn-apply">Apply Here!</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Sign In</a></li>
+                <li><a href="{% url 'register' %}">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+            <div class="message message-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>Caspian AI Friday Sessions — Second Run (March 6 – May 22, 2026)</p>
+        <p style="margin-top: 0.5rem;">
+            <a href="{% url 'home' %}">Home</a> · 
+            <a href="{% url 'sessions' %}">Sessions</a> · 
+            <a href="{% url 'rules' %}">Rules</a> · 
+            <a href="{% url 'apply' %}">Apply</a>
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<p>You are about to reject the following application(s):</p>
+<ul>
+    {% for obj in queryset %}
+        <li><strong>{{ obj.title }}</strong> — {{ obj.session_date }} (by {{ obj.submitted_by.get_full_name }})</li>
+    {% endfor %}
+</ul>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% for obj in queryset %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk }}" />
+    {% endfor %}
+    <input type="hidden" name="action" value="reject_applications" />
+    <input type="hidden" name="apply_rejection" value="1" />
+
+    <div style="margin: 20px 0;">
+        <label for="rejection_reason" style="display: block; margin-bottom: 8px; font-weight: bold;">Rejection reason (optional):</label>
+        <textarea id="rejection_reason" name="rejection_reason" rows="4" style="width: 100%; max-width: 600px; padding: 8px;"></textarea>
+    </div>
+
+    <input type="submit" value="Confirm Rejection" style="padding: 8px 20px; background: #ba2121; color: white; border: none; cursor: pointer;" />
+    <a href="{% url 'admin:ksessions_sessionapplication_changelist' %}" style="margin-left: 10px;">Cancel</a>
+</form>
+{% endblock %}

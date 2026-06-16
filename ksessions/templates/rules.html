@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Rules & Voting — Caspian AI Friday Sessions{% endblock %}
+
+{% block content %}
+<div class="rules-page">
+    <h1 class="page-title">Rules & Voting Info</h1>
+
+    <!-- ACTIVE VOTE BANNER -->
+    {% if active_votes %}
+    <div class="vote-banner">
+        <span class="vote-banner-label">🗳️ Voting is open!</span>
+        {% for vote in active_votes %}
+        <a href="{{ vote.voting_url }}" target="_blank" class="vote-banner-btn">Vote for {{ vote.session_title }} →</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- PARTICIPATION RULES -->
+    <section class="rules-section">
+        <h2>📋 Participation Rules</h2>
+        <div class="rules-card">
+            <div class="rule-item">
+                <span class="rule-icon">🏢</span>
+                <p>Sessions can be attended both <strong>online and offline</strong>, whether you are a speaker or not.</p>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">💻</span>
+                <p>Please <strong>do not bring laptops</strong> to the speaker venue — full focus on the session! 😊</p>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">🎤</span>
+                <p>Speakers can present <strong>online or offline</strong>.</p>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">📅</span>
+                <p>Applications must be submitted at least <strong>3 calendar days</strong> before the session date.</p>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">⚡</span>
+                <p>Priority is <strong>first come, first served</strong> based on application submission time.</p>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">⚠️</span>
+                <p>Attendance for your scheduled session is <strong>mandatory</strong>. No-shows will lose first-come/first-served priority for future applications.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- VOTING CRITERIA -->
+    <section class="rules-section">
+        <h2>🗳️ Voting Criteria</h2>
+        <p class="voting-intro">Voting is done anonymously via Microsoft Forms. Each criterion is rated on a <strong>1 to 5 scale</strong>.</p>
+        <div class="criteria-list">
+            <div class="criteria-item">
+                <span class="criteria-number">1</span>
+                <p>How <strong>applicable</strong> is the topic to your day-to-day life, work or personal learning?</p>
+            </div>
+            <div class="criteria-item">
+                <span class="criteria-number">2</span>
+                <p>How well did the speaker <strong>involve the audience</strong>? (Workshop style, interaction, questions, activities, etc.)</p>
+            </div>
+            <div class="criteria-item">
+                <span class="criteria-number">3</span>
+                <p>How strong were the speaker's <strong>presentation skills</strong>? (Clarity, structure, slide quality, delivery, public speaking, body language)</p>
+            </div>
+            <div class="criteria-item">
+                <span class="criteria-number">4</span>
+                <p>How <strong>new, creative, or forward-thinking</strong> was the topic?</p>
+            </div>
+            <div class="criteria-item">
+                <span class="criteria-number">5</span>
+                <p>How <strong>original or distinctive</strong> was the information provided, beyond what is typically seen?</p>
+            </div>
+            <div class="criteria-item">
+                <span class="criteria-number">6</span>
+                <p>How well did you <strong>understand the topic</strong>?</p>
+            </div>
+            <div class="criteria-item special">
+                <span class="criteria-number">✍️</span>
+                <p>Any specific <strong>written feedback</strong> to speaker(s) — not counted in the voting leaderboard.</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .rules-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+    }
+
+    .vote-banner {
+        background: #fff8eb;
+        border: 1px solid #f0e6d0;
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .vote-banner-label {
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .vote-banner-btn {
+        background-color: var(--accent);
+        color: var(--primary);
+        padding: 0.45rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: background-color 0.2s;
+    }
+
+    .vote-banner-btn:hover {
+        background-color: var(--accent-hover);
+    }
+
+    .page-title {
+        text-align: center;
+        color: var(--primary);
+        font-size: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .rules-section {
+        margin-bottom: 3rem;
+    }
+
+    .rules-section h2 {
+        color: var(--primary);
+        font-size: 1.4rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .rules-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .rule-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--gray-light);
+    }
+
+    .rule-item:last-child {
+        border-bottom: none;
+    }
+
+    .rule-icon {
+        font-size: 1.3rem;
+        flex-shrink: 0;
+        margin-top: 0.1rem;
+    }
+
+    .rule-item p {
+        font-size: 0.95rem;
+        color: #444;
+        line-height: 1.6;
+    }
+
+    /* ── VOTING CRITERIA ── */
+    .voting-intro {
+        color: #555;
+        margin-bottom: 1.2rem;
+        font-size: 0.95rem;
+    }
+
+    .criteria-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .criteria-item {
+        background: var(--white);
+        border-radius: 10px;
+        padding: 1rem 1.3rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.04);
+    }
+
+    .criteria-number {
+        background: var(--primary);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .criteria-item.special .criteria-number {
+        background: var(--accent);
+        color: var(--primary);
+    }
+
+    .criteria-item p {
+        font-size: 0.95rem;
+        color: #444;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .rules-page {
+            padding: 1.5rem 1rem;
+        }
+    }
+</style>
+{% endblock %}
